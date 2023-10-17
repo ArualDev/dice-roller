@@ -30,20 +30,30 @@ function createLight() {
     return light;
 }
 
+
+
 export async function createScene(container: HTMLElement) {
-
-    const rect = container.getBoundingClientRect()
-    const width = rect.width;
-    const height = rect.height;
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 200);
-
+    const camera = new THREE.PerspectiveCamera(40, undefined, 0.1, 200);
+    
     const scene = new THREE.Scene();
 
     const renderer = new THREE.WebGLRenderer({
         antialias: true,
     });
     renderer.shadowMap.enabled = true;
-    renderer.setSize(width, height);
+    
+    function setDisplaySize() {
+        const rect = container.getBoundingClientRect()
+        const width = rect.width;
+        const height = rect.height;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(window.devicePixelRatio)
+    }
+
+    setDisplaySize();
+    window.addEventListener('resize', setDisplaySize);
 
     container.appendChild(renderer.domElement);
 
