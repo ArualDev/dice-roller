@@ -31,9 +31,11 @@
 
 <style>
   main {
-    min-width: 600px;
+    /* min-width: 600px; */
     /* min-height: 400px; */
-    height: 90%;
+    /* height: 90%; */
+    width: 100%;
+    height: 100%;
     position: relative;
   }
 
@@ -44,6 +46,9 @@
     letter-spacing: 0.3rem;
     text-transform: uppercase;
     font-size: 1.5rem;
+    display: block;
+    left: 50%;
+    translate: -50% 0;
   }
 
   #roll-result {
