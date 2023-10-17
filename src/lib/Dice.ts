@@ -21,13 +21,14 @@ export default class Dice {
     }
 
     getMesh() {
-        let mesh;
+        let mesh: THREE.Mesh | undefined;
         this.model.traverse(o => {
             if (o.type === 'Mesh')
                 mesh = (o as THREE.Mesh);
         })
         if (!mesh)
             throw new Error('No mesh found');
+        mesh.castShadow = true;
         return mesh;
     }
 
