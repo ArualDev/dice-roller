@@ -88,17 +88,16 @@ export async function createScene(container: HTMLElement) {
 
     const onAnimate = new CustomEvent('animate')
 
-    scene.background = new THREE.Color(0xffffff)
+    
     let lastFrameTime = 0;
     function animate(time: number = 0) {
         const deltaTime = time - lastFrameTime;
-                
-        controls.update();
         requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-        physicsWorld.fixedStep();
 
+        controls.update();
+        physicsWorld.fixedStep();
         dice.update(deltaTime);
+        renderer.render(scene, camera);
 
         dispatchEvent(onAnimate);
 

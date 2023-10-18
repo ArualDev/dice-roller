@@ -73,7 +73,23 @@ export default class Dice {
         return maxHeightSideID
     }
 
-    roll() {
+    waitForStop() {
+        return new Promise<void>((resolve, reject) => {
+            const dice = this;
+            function animateListener() {
+                const threshold = 0.1;
+                const thresholdSquared = threshold * threshold;
+
+                if (dice.body.velocity.lengthSquared() > thresholdSquared || dice.body.angularVelocity.lengthSquared() > thresholdSquared)
+                    return;
+                removeEventListener('animate', animateListener);
+                resolve();
+            }
+            addEventListener('animate', animateListener);
+        })
+    }
+
+    async roll() {
         this.body.position = new CANNON.Vec3(0, 5, 0)
         this.body.velocity = new CANNON.Vec3();
         this.body.angularVelocity = new CANNON.Vec3();
@@ -89,19 +105,8 @@ export default class Dice {
             randomRange(-1, 1)
         ).scale(randVelMult);
 
-        return new Promise<number>((resolve, reject) => {
-            const dice = this;
-            function animateListener() {
-                const threshold = 0.1;
-                const thresholdSquared = threshold * threshold;
-
-                if (dice.body.velocity.lengthSquared() > thresholdSquared || dice.body.angularVelocity.lengthSquared() > thresholdSquared)
-                    return;
-                removeEventListener('animate', animateListener);
-                resolve(dice.getCurrentSideUp());
-            }
-            addEventListener('animate', animateListener);
-        })
+        await this.waitForStop();
+        return this.getCurrentSideUp();
     }
 
     update(dt: number) {
