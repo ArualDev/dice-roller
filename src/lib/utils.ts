@@ -18,3 +18,9 @@ export function syncModelWithBody(model: THREE.Group<THREE.Object3DEventMap>, bo
     model.position.set(body.position.x, body.position.y, body.position.z);
     model.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w);
 }
+
+export function waitSeconds(seconds: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, seconds * 1000)
+    });
+}

@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es'
-import { clamp, randomRange } from './mathUtils';
-import { syncModelWithBody, trimeshFromGeometry } from './utils';
-import { bounceIn } from 'svelte/easing';
+import { clamp } from './mathUtils';
+import { syncModelWithBody, trimeshFromGeometry, waitSeconds } from './utils';
 import { easeOutElastic } from './animFunctions';
 
 export default class Dice {
@@ -77,7 +76,7 @@ export default class Dice {
         return new Promise<void>((resolve, reject) => {
             const dice = this;
             function animateListener() {
-                const threshold = 0.1;
+                const threshold = 0.05;
                 const thresholdSquared = threshold * threshold;
 
                 if (dice.body.velocity.lengthSquared() > thresholdSquared || dice.body.angularVelocity.lengthSquared() > thresholdSquared)
@@ -91,7 +90,7 @@ export default class Dice {
 
     async roll() {
         this.body.position = new CANNON.Vec3(0, 5, 0)
-        this.body.velocity = new CANNON.Vec3();
+        this.body.velocity = new CANNON.Vec3(0, 0, -10);
         this.body.angularVelocity = new CANNON.Vec3();
         const randQuaternion = new THREE.Quaternion().random();
         this.body.quaternion.set(randQuaternion.x, randQuaternion.y, randQuaternion.z, randQuaternion.w);
@@ -100,22 +99,23 @@ export default class Dice {
         const randVelMult = 20;
 
         this.body.angularVelocity = new CANNON.Vec3(
-            randomRange(-1, 1),
-            randomRange(-1, 1),
-            randomRange(-1, 1)
+            THREE.MathUtils.randFloatSpread(1) - 0.5,
+            THREE.MathUtils.randFloatSpread(1),
+            THREE.MathUtils.randFloatSpread(1),
         ).scale(randVelMult);
 
-        await this.waitForStop();
+        // Proceeds when the dice stops or when the roll time exceeds its time limit
+        await Promise.any([this.waitForStop(), waitSeconds(10)]);
         return this.getCurrentSideUp();
     }
 
     update(dt: number) {
-        if(this.startAnimT < 1){
-            this.startAnimT = clamp(0, 1, this.startAnimT + dt / 800);
-            const scale = 0.5 + easeOutElastic(this.startAnimT) * 0.5;
-            this.model.scale.set(scale, scale, scale);            
+        if (this.startAnimT < 1) {
+            this.startAnimT = clamp(0, 1, this.startAnimT + dt / 0.8);
+            const scale = 0.2 + easeOutElastic(this.startAnimT) * 0.8;
+            this.model.scale.set(scale, scale, scale);
         }
-        
+
         syncModelWithBody(this.model, this.body)
     }
 
