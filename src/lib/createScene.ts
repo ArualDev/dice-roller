@@ -3,12 +3,34 @@ import * as CANNON from 'cannon-es'
 import { loadGLTF } from './utils';
 import Dice from './Dice';
 
+
+interface sceneTheme {
+    backgroundColor: THREE.ColorRepresentation,
+    floorColor: THREE.ColorRepresentation,
+    floorEmission: THREE.ColorRepresentation
+}
+
+const lightTheme: sceneTheme = {
+    backgroundColor: 0xffffff,
+    floorColor: 0xffffff,
+    floorEmission: 0x666666
+}
+
+const darkTheme: sceneTheme = {
+    backgroundColor: 0x111111,
+    floorColor: 0x444444,
+    floorEmission: 0x000000
+}
+
+const isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+const theme = isDarkMode ? darkTheme : lightTheme;
+
 function createFloor() {
     const geometry = new THREE.PlaneGeometry(50, 50)
     const texture = new THREE.TextureLoader().load('floor-alpha.png');
     const material = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        emissive: 0x999999,
+        color: theme.floorColor,
+        emissive: theme.floorEmission,
         transparent: true,
         alphaMap: texture,
         side: THREE.DoubleSide
@@ -34,6 +56,7 @@ export async function createScene(container: HTMLElement) {
     const camera = new THREE.PerspectiveCamera(40, undefined, 0.1, 200);
 
     const scene = new THREE.Scene();
+    scene.background = new THREE.Color(theme.backgroundColor)
 
     const renderer = new THREE.WebGLRenderer({
         antialias: true,
