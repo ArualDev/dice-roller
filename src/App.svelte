@@ -11,7 +11,6 @@
     rollResult = null;
     if (rollFunc) {
       const res = await rollFunc();
-      console.log(res);
       rollResult = res;
     }
   }
@@ -54,7 +53,7 @@
   #roll-result {
     position: absolute;
     width: 100%;
-    font-size: 5rem;
-    text-shadow: #555 2px 0 10px;
+    font-size: 10rem;
+    text-shadow: #222 0 0 32px;
   }
 </style>
