@@ -15,8 +15,10 @@ export function trimeshFromGeometry(geometry: THREE.BufferGeometry) {
 }
 
 export function syncModelWithBody(model: THREE.Group<THREE.Object3DEventMap>, body: CANNON.Body) {
-    model.position.set(body.position.x, body.position.y, body.position.z);
-    model.quaternion.set(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w);
+    const position = body.interpolatedPosition;
+    const quaternion = body.interpolatedQuaternion;
+    model.position.set(position.x, position.y, position.z);
+    model.quaternion.set(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 export function waitSeconds(seconds: number) {
